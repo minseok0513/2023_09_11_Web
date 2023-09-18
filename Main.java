@@ -36,6 +36,14 @@ public class Main {
 					for (int i = articles.size() - 1; i >= 0; i--) {
 						Article article = articles.get(i);
 						System.out.printf(" %4d     /   %5s    /      %4d  \n", article.id, article.title, article.hit);
+						if(command.startsWith("article list search ")) {
+							String[] list_title=command.split(" ");
+							if(list_title[4]==article.title) {
+								System.out.println(article.id+  "/" +article.title+"/"+article.hit);
+
+							}
+
+						}
 					}
 				}
 
@@ -138,22 +146,34 @@ public class Main {
 				System.out.println(id + "번 글을 삭제했어");
 
 			} else if(command.equals("member join")) {
+				String loginId, loginPw, regDate, Name, RePw;
+
 				System.out.printf("ID를 입력해주세요.");
-				String loginId=sc.nextLine();
+				loginId=sc.nextLine();
 				System.out.printf("PW를 입력해주세요.");
-				String loginPw=sc.nextLine();
+				loginPw=sc.nextLine();
 				System.out.printf("PW를 확인해주세요");
 				String RePW=sc.nextLine();
 				System.out.printf("이름를 입력해주세요.");
-				String Name=sc.nextLine();
-				String regDate = Util.getNow();
+				Name=sc.nextLine();
+				regDate = Util.getNow();
 				Membership membership = new Membership(loginId, loginPw, regDate, Name);
 				memberships.add(membership);
-
-				System.out.println("회원가입이 완료되었습니다.");
-				if(loginId==null) {
-					System.out.println("ID입력은 필수사항입니다.");
+				for(int i=0; i<memberships.size(); i++) {
+					if(membership.loginId==null) {
+						System.out.println("이 아이디는 사용할수 있습니다.");
+						break;
+					} else if(membership.loginId==loginId){
+						System.out.println("이 아이디는 사용하실 수 있습니다.");
+						break;
+					} else {
+						System.out.println("이미 사용중인 아이디입니다..");
+						break;
+					}
 				}
+				System.out.println("회원가입이 완료되었습니다.");
+
+
 			} else {
 				System.out.println("존재하지 않는 명령어입니다");
 				continue;
@@ -164,7 +184,41 @@ public class Main {
 
 		sc.close();
 	}
+	private static int getArticleIndexById(int id) {
 
+		for (int i = 0; i < articles.size(); i++) {
+			Article article = articles.get(i);
+			if (article.id == id) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	private static Article getArticleById(int id) {
+
+		//		for (int i = 0; i < articles.size(); i++) {
+		//			Article article = articles.get(i);
+		//			if (article.id == id) {
+		//				return article;
+		//			}
+		//		}
+
+		//		for (Article article : articles) {
+		//			if (article.id == id) {
+		//				return article;
+		//			}
+		//		}
+
+		int index = getArticleIndexById(id);
+
+		if (index != -1) {
+			return articles.get(index);
+		}
+
+		return null;
+	}
 	private static void makeTestData() {
 		System.out.println("테스트를 위한 데이터 3개 생성 완료");
 		articles.add(new Article(1, Util.getNow(), Util.getNow(), "제목1", "내용1", 11));
